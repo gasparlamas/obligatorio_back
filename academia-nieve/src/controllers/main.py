@@ -1,11 +1,12 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS  
-from instructores import  agregar_instructor,obtener_instructor, actualizar_instructor, eliminar_instructor, ver_clases_asignadas
-from alumnos import agregar_alumno,inscribir_alumno_en_clase, obtener_alumno, actualizar_alumno, eliminar_alumno
+from instructores import  agregar_instructor,obtener_instructores, actualizar_instructor, eliminar_instructor, ver_clases_asignadas
+from alumnos import agregar_alumno,inscribir_alumno_en_clase, obtener_alumnos, actualizar_alumno, eliminar_alumno
 from clases import crear_clase, cambiar_turno_clase,cambiar_tipo_clase, cambiar_estado_clase, listar_clases, eliminar_clase
 from alumno_clase import registrar_equipamiento_alumno, ver_equipamiento_alumno
-from turnos import agregar_turno, actualizar_turno, obtener_turno, eliminar_turno
-from actividades import obtener_actividad, actualizar_actividad
+from turnos import agregar_turno, actualizar_turno, obtener_turnos, eliminar_turno
+from actividades import obtener_actividades, actualizar_actividad
+from equipamiento import obtener_equipamiento
 
 app = Flask(__name__)
 CORS(app)  #habilita CORS para todas las rutas y permite solicitudes de cualquier origen
@@ -23,10 +24,10 @@ def api_agregar_instructor():
     return jsonify({"message": "Instructor agregado exitosamente"}), 201
 
 
-@app.route("/api/instructores/<ci_instructor>", methods=["GET"])
-def api_obtener_instructor(ci_instructor):
-    instructor = obtener_instructor(ci_instructor)
-    return jsonify(instructor)
+@app.route("/api/instructores", methods=["GET"])
+def api_obtener_instructores():
+    instructores = obtener_instructores()
+    return jsonify(instructores)
 
 @app.route("/api/instructores/<ci_instructor>", methods=["PUT"])
 def api_actualizar_instructor(ci_instructor):
@@ -71,10 +72,10 @@ def api_inscribir_alumno_en_clase(ci_alumno):
     
     return jsonify({"message": "Alumno inscrito en la clase exitosamente"}), 201
 
-@app.route("/api/alumnos/<ci_alumno>", methods=["GET"])
-def api_obtener_alumno(ci_alumno):
-    alumno = obtener_alumno(ci_alumno)
-    return jsonify(alumno)
+@app.route("/api/alumnos", methods=["GET"])
+def api_obtener_alumnos():
+    alumnos = obtener_alumnos()
+    return jsonify(alumnos)
 
 @app.route("/api/alumnos/<ci_alumno>", methods=["PUT"])
 def api_actualizar_alumno(ci_alumno):
@@ -180,19 +181,16 @@ def api_actualizar_turno(id_turno):
     actualizar_turno(id_turno, hora_inicio, hora_fin)
     return jsonify({"message": "Turno actualizado exitosamente"})
 
-@app.route("/api/turnos/<id_turno>", methods=["GET"])
-def api_obtener_turno(id_turno):
-    turno = obtener_turno(id_turno)
-    if turno:
-        # Devolver los datos del turno en formato json
-        return jsonify({
-            "id_turno": turno[0],
-            "hora_inicio": turno[1],
-            "hora_fin": turno[2]
-        })
+@app.route("/api/turnos", methods=["GET"])
+def api_listar_turnos():
+    # Llamar a la función que lista todos los turnos
+    turnos = obtener_turnos()
+
+    # Si hay turnos, devolverlos en formato JSON, de lo contrario, un mensaje de error
+    if turnos:
+        return jsonify(turnos), 200
     else:
-        # Si no se encuentra el turno, devolver un mensaje de error
-        return jsonify({"message": "Turno no encontrado"}), 404
+        return jsonify({"message": "No se encontraron turnos"}), 404
 
 
 @app.route("/api/turnos/<id_turno>", methods=["DELETE"])
@@ -201,20 +199,11 @@ def api_eliminar_turno(id_turno):
     return jsonify({"message": "Turno eliminado exitosamente"})
 
 # ------------------------- Actividades -------------------------
-@app.route("/api/actividades/<int:id_actividad>", methods=["GET"])
-def api_obtener_actividad(id_actividad):
-    actividad = obtener_actividad(id_actividad)
-    if actividad:
-        # Si la actividad existe, devolverla como un json
-        return jsonify({
-            "id_actividad": actividad[0],
-            "descripcion": actividad[1],  # Asumiendo que el nombre es el segundo campo
-            "costo": actividad[2],  # Asumiendo que la descripción es el tercer campo
-            # Agrega más campos según la estructura de la tabla 'actividades'
-        })
-    else:
-        # Si no se encuentra la actividad, devolver un mensaje de error
-        return jsonify({"message": "Actividad no encontrada"}), 404
+@app.route("/api/actividades", methods=["GET"])
+def api_obtener_actividades():
+    actividades = obtener_actividades()
+
+    return jsonify(actividades), 200
 
 @app.route("/api/actividades/<int:id_actividad>", methods=["PUT"])
 def api_actualizar_actividad(id_actividad):
@@ -230,6 +219,16 @@ def api_actualizar_actividad(id_actividad):
         return jsonify({"message": "Actividad actualizada exitosamente"}), 200
     except Exception as e:
         return jsonify({"message": f"Error al actualizar la actividad: {e}"}), 500
+
+
+
+# ------------------------- Equipamiento -------------------------
+
+@app.route("/api/equipamiento", methods=["GET"])
+def api_obtener_equipamiento():
+    equipamiento = obtener_equipamiento()
+    return jsonify(equipamiento)
+
 
 
 # ------------------------- Alumno Clase -------------------------

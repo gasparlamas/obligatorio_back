@@ -16,8 +16,6 @@ def agregar_turno(id_turno, hora_inicio, hora_fin):
             close_connection(connection)
 
 
-
-
 # Función para actualizar los datos de un turno
 def actualizar_turno(id_turno, hora_inicio, hora_fin):
     connection = get_db_connection()
@@ -48,26 +46,28 @@ def eliminar_turno(id_turno):
         finally:
             close_connection(connection)
 
-# Función para obtener un turno por id
-def obtener_turno(id_turno):
+# Función para obtener todos los turnos
+def obtener_turnos():
     connection = get_db_connection()
     if connection:
         try:
-            cursor = connection.cursor()
-            query = "SELECT * FROM turnos WHERE id_turno = %s"
-            cursor.execute(query, (id_turno,))
-            turno = cursor.fetchone()
+            cursor = connection.cursor(dictionary=True)
+            query = "SELECT * FROM turnos"
+            cursor.execute(query)
+            turnos = cursor.fetchall()  # Obtener todas las filas como diccionarios
 
-            # Convertir los valores de hora_inicio y hora_fin a formato "HH:MM:SS"
-            if turno:
-                id_turno, hora_inicio, hora_fin = turno
-                hora_inicio = str(hora_inicio)
-                hora_fin = str(hora_fin)
-                return (id_turno, hora_inicio, hora_fin)
+            # Convertir valores de hora_inicio y hora_fin a formato "HH:MM:SS"
+            for turno in turnos:
+                turno['hora_inicio'] = str(turno['hora_inicio'])
+                turno['hora_fin'] = str(turno['hora_fin'])
+
+            return turnos
         except Exception as e:
-            print("Error al obtener el turnp:", e)
+            print("Error al obtener los turnos:", e)
         finally:
             close_connection(connection)
+
+
 
 if __name__ == "__main__":
     # Prueba de agregar un turno

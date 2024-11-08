@@ -17,16 +17,16 @@ def agregar_instructor(ci_instructor, nombre, apellido):
             close_connection(connection)
 
 
-# Función para obtener un instructor por CI
-def obtener_instructor(ci_instructor):
+# Función para obtener todos los instructores
+def obtener_instructores():
     connection = get_db_connection()
     if connection:
         try:
-            cursor = connection.cursor()
-            query = "SELECT * FROM instructores WHERE ci_instructor = %s"  
-            cursor.execute(query, (ci_instructor,))
-            instructor = cursor.fetchone()
-            return instructor
+            cursor = connection.cursor(dictionary=True)
+            query = "SELECT * FROM instructores"  
+            cursor.execute(query)
+            instructores = cursor.fetchall()
+            return instructores
         except Exception as e:
             print("Error al obtener el instructor:", e)
         finally:

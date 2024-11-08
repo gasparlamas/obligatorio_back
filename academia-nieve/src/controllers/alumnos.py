@@ -59,18 +59,18 @@ def inscribir_alumno_en_clase(ci_alumno, id_clase):
         finally:
             close_connection(connection)
 
-# Función para obtener un alumno por CI
-def obtener_alumno(ci_alumno):
+# Función para obtener todos los alumnos
+def obtener_alumnos():
     connection = get_db_connection()
     if connection:
         try:
-            cursor = connection.cursor()
-            query = "SELECT * FROM alumnos WHERE ci_alumno = %s"
-            cursor.execute(query, (ci_alumno,))
-            alumno = cursor.fetchone()
-            return alumno
+            cursor = connection.cursor(dictionary=True)
+            query = "SELECT * FROM alumnos"
+            cursor.execute(query)
+            alumnos = cursor.fetchall()
+            return alumnos
         except Exception as e:
-            print("Error al obtener el alumno:", e)
+            print("Error al obtener los alumnos:", e)
         finally:
             close_connection(connection)
 

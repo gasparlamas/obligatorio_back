@@ -1,17 +1,17 @@
 from database.connection import get_db_connection, close_connection
 
-# Función para obtener una actividad por ID
-def obtener_actividad(id_actividad):
+# Función para obtener todas las actividades
+def obtener_actividades():
     connection = get_db_connection()
     if connection:
         try:
-            cursor = connection.cursor()
-            query = "SELECT * FROM actividades WHERE id_actividad = %s"
-            cursor.execute(query, (id_actividad,))
-            actividad = cursor.fetchone()
-            return actividad
+            cursor = connection.cursor(dictionary=True)
+            query = "SELECT * FROM actividades"
+            cursor.execute(query)
+            actividades = cursor.fetchall()  
+            return actividades
         except Exception as e:
-            print("Error al obtener la actividad:", e)
+            print("Error al obtener las actividades:", e)
         finally:
             close_connection(connection)
 
