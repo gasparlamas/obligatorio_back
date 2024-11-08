@@ -1,13 +1,13 @@
 from database.connection import get_db_connection, close_connection
 
 # Función para obtener un instructor por CI
-def obtener_instructor(ci):
+def obtener_instructor(ci_instructor):
     connection = get_db_connection()
     if connection:
         try:
             cursor = connection.cursor()
             query = "SELECT * FROM instructores WHERE ci_instructor = %s"  
-            cursor.execute(query, (ci,))
+            cursor.execute(query, (ci_instructor,))
             instructor = cursor.fetchone()
             return instructor
         except Exception as e:
@@ -16,13 +16,13 @@ def obtener_instructor(ci):
             close_connection(connection)
 
 # Función para actualizar los datos de un instructor
-def actualizar_instructor(ci, nombre, apellido):
+def actualizar_instructor(ci_instructor, nombre, apellido):
     connection = get_db_connection()
     if connection:
         try:
             cursor = connection.cursor()
             query = "UPDATE instructores SET nombre = %s, apellido = %s WHERE ci_instructor = %s"  
-            cursor.execute(query, (nombre, apellido, ci))
+            cursor.execute(query, (nombre, apellido, ci_instructor))
             connection.commit()
             print("Instructor actualizado exitosamente.")
         except Exception as e:
@@ -30,20 +30,41 @@ def actualizar_instructor(ci, nombre, apellido):
         finally:
             close_connection(connection)
 
-# Función para eliminar un instructor
-def eliminar_instructor(ci):
+
+#Funcion para eliminar un instructor
+def eliminar_instructor(ci_instructor):
     connection = get_db_connection()
     if connection:
         try:
             cursor = connection.cursor()
-            query = "DELETE FROM instructores WHERE ci_instructor = %s" 
-            cursor.execute(query, (ci,))
+
+            # Eliminar las referencias en alumno_clase para todas las clases del instructor
+            delete_alumno_clase_query = """
+                DELETE FROM alumno_clase
+                WHERE id_clase IN (
+                    SELECT id_clase FROM clase WHERE ci_instructor = %s
+                )
+            """
+            cursor.execute(delete_alumno_clase_query, (ci_instructor,))
+
+            # Eliminar las clases asociadas a este instructor en clase
+            delete_clases_query = "DELETE FROM clase WHERE ci_instructor = %s"
+            cursor.execute(delete_clases_query, (ci_instructor,))
+
+            # Eliminar el instructor en instructores
+            delete_instructor_query = "DELETE FROM instructores WHERE ci_instructor = %s"
+            cursor.execute(delete_instructor_query, (ci_instructor,))
+
+            # Confirmar todos los cambios
             connection.commit()
-            print("Instructor eliminado exitosamente.")
+            print("Instructor y clases asociadas eliminados exitosamente.")
         except Exception as e:
             print("Error al eliminar el instructor:", e)
+            connection.rollback()
         finally:
             close_connection(connection)
+
+
 
 # Función para ver las clases asignadas a un instructor
 def ver_clases_asignadas(ci_instructor):
@@ -52,7 +73,7 @@ def ver_clases_asignadas(ci_instructor):
         try:
             cursor = connection.cursor(dictionary=True)
             query = """
-                SELECT clase.id_clase, actividad.nombre AS actividad, turno.horario AS turno, clase.dictada, clase.grupal
+                SELECT clase.id_clase, actividad.descripcion AS actividad, turno.hora_inicio AS turno, clase.dictada, clase.grupal
                 FROM clase
                 JOIN actividades AS actividad ON clase.id_actividad = actividad.id_actividad
                 JOIN turnos AS turno ON clase.id_turno = turno.id_turno
@@ -72,10 +93,10 @@ if __name__ == "__main__":
     print("Datos del instructor:", instructor)
     
     # Prueba de actualizar un instructor
-    actualizar_instructor("87654321", "María", "Fernández")
+    actualizar_instructor("91234567", "Fernando", "Gago")
     
     # Prueba de eliminar un instructor
-    eliminar_instructor("87654321")
+    eliminar_instructor("78901234")
     
     # Prueba de ver clases asignadas
     clases_asignadas = ver_clases_asignadas("12345678")

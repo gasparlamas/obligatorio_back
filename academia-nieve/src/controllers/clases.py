@@ -33,24 +33,24 @@ def crear_clase(id_clase, ci_instructor, id_actividad, id_turno, dictada, grupal
         finally:
             close_connection(connection)
 
-# Función para cambiar el turno de una clase
-def cambiar_turno_clase(id_clase, nuevo_turno):
+#Funcion para cambiar turno de una clase
+def cambiar_turno_clase(id_clase, id_turno):
     connection = get_db_connection()
     if connection:
         try:
             cursor = connection.cursor()
 
-            # Verificar si la clase ya ha sido dictada
+            # Verificar si la clase ya ha fue dictada
             cursor.execute("SELECT dictada FROM clase WHERE id_clase = %s", (id_clase,))
             clase = cursor.fetchone()
 
             if clase and clase[0]:  # Si dictada es True
                 print("No se puede cambiar el turno de una clase ya dictada.")
-                return
+                return "clase_dictada"
 
             # Actualizar el turno
             query = "UPDATE clase SET id_turno = %s WHERE id_clase = %s"
-            cursor.execute(query, (nuevo_turno, id_clase))
+            cursor.execute(query, (id_turno, id_clase))
             connection.commit()
             print("Turno de la clase actualizado exitosamente.")
         except Exception as e:
@@ -59,6 +59,8 @@ def cambiar_turno_clase(id_clase, nuevo_turno):
         finally:
             close_connection(connection)
 
+
+
 # Función para cambiar el tipo de clase (grupal o individual)
 def cambiar_tipo_clase(id_clase, grupal):
     connection = get_db_connection()
@@ -66,13 +68,13 @@ def cambiar_tipo_clase(id_clase, grupal):
         try:
             cursor = connection.cursor()
 
-            # Verificar si la clase ya ha sido dictada
+            # Verificar si la clase ya fue sido dictada
             cursor.execute("SELECT dictada FROM clase WHERE id_clase = %s", (id_clase,))
             clase = cursor.fetchone()
 
             if clase and clase[0]:  # Si dictada es True
                 print("No se puede cambiar el tipo de una clase ya dictada.")
-                return
+                return "clase_dictada"
 
             # Actualizar el tipo de clase
             query = "UPDATE clase SET grupal = %s WHERE id_clase = %s"
@@ -93,36 +95,43 @@ def listar_clases():
             cursor = connection.cursor(dictionary=True)
             cursor.execute("SELECT * FROM clase")
             clases = cursor.fetchall()
-            for clase in clases:
-                print(clase)
+            return clases
         except Exception as e:
             print("Error al listar las clases:", e)
         finally:
             close_connection(connection)
 
-# Función para eliminar una clase (solo si no ha sido dictada)
+# Función para eliminar una clase (si no fue dictada)
 def eliminar_clase(id_clase):
     connection = get_db_connection()
     if connection:
         try:
             cursor = connection.cursor()
 
-            # Verificar si la clase ya ha sido dictada
+            # Verificar si la clase ya fue dictada
             cursor.execute("SELECT dictada FROM clase WHERE id_clase = %s", (id_clase,))
             clase = cursor.fetchone()
 
             if clase and clase[0]:  # Si dictada es True
                 print("No se puede eliminar una clase ya dictada.")
-                return
+                return {"success": False, "message": "No se puede eliminar una clase ya dictada."}
+
+            # Eliminar las referencias a la clase en "alumno_clase"
+            delete_referencias_query = "DELETE FROM alumno_clase WHERE id_clase = %s"
+            cursor.execute(delete_referencias_query, (id_clase,))
+            print("Referencias a la clase eliminadas de alumno_clase.")
 
             # Eliminar la clase
             query = "DELETE FROM clase WHERE id_clase = %s"
             cursor.execute(query, (id_clase,))
             connection.commit()
             print("Clase eliminada exitosamente.")
+            return {"success": True, "message": "Clase eliminada exitosamente."}
+
         except Exception as e:
             print("Error al eliminar la clase:", e)
             connection.rollback()
+            return {"success": False, "message": f"Error al eliminar la clase: {str(e)}"}
         finally:
             close_connection(connection)
 

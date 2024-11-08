@@ -22,7 +22,7 @@ def inscribir_alumno_en_clase(ci_alumno, id_clase):
         try:
             cursor = connection.cursor(dictionary=True)
             
-            # 1. Obtener el turno de la clase a la que se quiere inscribir el alumno
+            #Obtener el turno de la clase a la que se quiere inscribir el alumno
             cursor.execute("SELECT id_turno FROM clase WHERE id_clase = %s", (id_clase,))
             turno_clase = cursor.fetchone()
             
@@ -33,7 +33,7 @@ def inscribir_alumno_en_clase(ci_alumno, id_clase):
             
             id_turno = turno_clase['id_turno']
 
-            # 2. Verificar si el alumno ya está inscrito en otra clase en el mismo turno
+            # verificar si el alumno ya está inscrito en otra clase en el mismo turno
             cursor.execute("""
                 SELECT COUNT(*) AS cuenta
                 FROM alumno_clase ac
@@ -45,7 +45,7 @@ def inscribir_alumno_en_clase(ci_alumno, id_clase):
             if resultado['cuenta'] > 0:
                 print("El alumno ya está inscrito en otra clase en el mismo turno.")
             else:
-                # 3. Insertar al alumno en la clase si no está en otro turno
+                #Insertar al alumno en la clase si no está en otro turno
                 cursor.execute("""
                     INSERT INTO alumno_clase (id_clase, ci_alumno, id_equipamiento, alquilado)
                     VALUES (%s, %s, NULL, FALSE)
@@ -89,34 +89,40 @@ def actualizar_alumno(ci_alumno, nombre, apellido, fecha_nacimiento):
         finally:
             close_connection(connection)
 
-# Función para eliminar un alumno
 def eliminar_alumno(ci_alumno):
     connection = get_db_connection()
     if connection:
         try:
             cursor = connection.cursor()
-            query = "DELETE FROM alumnos WHERE ci_alumno = %s"
-            cursor.execute(query, (ci_alumno,))
+            # Eliminar los registros relacionados en alumno_clase
+            query_relacionados = "DELETE FROM alumno_clase WHERE ci_alumno = %s"
+            cursor.execute(query_relacionados, (ci_alumno,))
+            # Eliminar el alumno en la tabla alumnos
+            query_alumno = "DELETE FROM alumnos WHERE ci_alumno = %s"
+            cursor.execute(query_alumno, (ci_alumno,))
+
             connection.commit()
-            print("Alumno eliminado exitosamente.")
+            print("Alumno y registros relacionados eliminados exitosamente.")
         except Exception as e:
             print("Error al eliminar el alumno:", e)
+            connection.rollback()
         finally:
             close_connection(connection)
 
+
 if __name__ == "__main__":
     # Prueba de agregar un alumno
-    agregar_alumno("12345678", "Juan", "Pérez", "2000-05-12")
+    agregar_alumno("18919120", "Cris", "Pierri", "2005-04-20")
     
     # Prueba de inscribir un alumno en una clase (verificación de turno incluida)
-    inscribir_alumno_en_clase("12345678", 1)
+    inscribir_alumno_en_clase("10023456", 2)
     
     # Prueba de obtener un alumno
-    alumno = obtener_alumno("12345678")
+    alumno = obtener_alumno("10023456")
     print("Datos del alumno:", alumno)
     
     # Prueba de actualizar un alumno
-    actualizar_alumno("12345678", "Juan", "García", "2000-05-12")
+    actualizar_alumno("12345678", "Sancho", "Panza", "1992-05-12")
     
     # Prueba de eliminar un alumno
-    eliminar_alumno("10012345")
+    eliminar_alumno("10156789")
