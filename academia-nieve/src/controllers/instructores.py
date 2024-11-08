@@ -1,5 +1,22 @@
 from database.connection import get_db_connection, close_connection
 
+
+# Función para agregar un nuevo instructor
+def agregar_instructor(ci_instructor, nombre, apellido):
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor()
+            query = "INSERT INTO instructores (ci_instructor, nombre, apellido) VALUES (%s, %s, %s)"
+            cursor.execute(query, (ci_instructor, nombre, apellido))
+            connection.commit()
+            print("Instructor agregado exitosamente.")
+        except Exception as e:
+            print("Error al agregar el instructor:", e)
+        finally:
+            close_connection(connection)
+
+
 # Función para obtener un instructor por CI
 def obtener_instructor(ci_instructor):
     connection = get_db_connection()
@@ -88,6 +105,10 @@ def ver_clases_asignadas(ci_instructor):
             close_connection(connection)
 
 if __name__ == "__main__":
+
+     # Prueba de agregar un alumno
+    agregar_instructor("55287960", "Renzo", "Dorta")
+
     # Prueba de obtener un instructor
     instructor = obtener_instructor("12345678")
     print("Datos del instructor:", instructor)

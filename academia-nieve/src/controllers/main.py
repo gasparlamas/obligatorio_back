@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS  
-from instructores import  obtener_instructor, actualizar_instructor, eliminar_instructor, ver_clases_asignadas
+from instructores import  agregar_instructor,obtener_instructor, actualizar_instructor, eliminar_instructor, ver_clases_asignadas
 from alumnos import agregar_alumno,inscribir_alumno_en_clase, obtener_alumno, actualizar_alumno, eliminar_alumno
 from clases import crear_clase, cambiar_turno_clase,cambiar_tipo_clase, listar_clases, eliminar_clase
 from alumno_clase import registrar_equipamiento_alumno, ver_equipamiento_alumno
@@ -12,6 +12,16 @@ CORS(app)  #habilita CORS para todas las rutas y permite solicitudes de cualquie
 # para SOLO dar acceso al frontend se puede especificar: CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 # ------------------------- Instructores -------------------------
+
+@app.route("/api/instructores", methods=["POST"])
+def api_agregar_instructor():
+    data = request.json
+    ci_instructor = data.get("ci_instructor")
+    nombre = data.get("nombre")
+    apellido = data.get("apellido")
+    agregar_instructor(ci_instructor, nombre, apellido)
+    return jsonify({"message": "Instructor agregado exitosamente"}), 201
+
 
 @app.route("/api/instructores/<ci_instructor>", methods=["GET"])
 def api_obtener_instructor(ci_instructor):
