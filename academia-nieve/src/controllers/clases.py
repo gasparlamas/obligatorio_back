@@ -68,7 +68,7 @@ def cambiar_tipo_clase(id_clase, grupal):
         try:
             cursor = connection.cursor()
 
-            # Verificar si la clase ya fue sido dictada
+            # Verificar si la clase ya fue dictada
             cursor.execute("SELECT dictada FROM clase WHERE id_clase = %s", (id_clase,))
             clase = cursor.fetchone()
 
@@ -83,6 +83,24 @@ def cambiar_tipo_clase(id_clase, grupal):
             print("Tipo de clase actualizado exitosamente.")
         except Exception as e:
             print("Error al cambiar el tipo de clase:", e)
+            connection.rollback()
+        finally:
+            close_connection(connection)
+
+# Función para cambiar si la clase esta o no dictada
+def cambiar_estado_clase(id_clase, dictada):
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor()
+
+            # Actualizar el tipo de clase
+            query = "UPDATE clase SET dictada = %s WHERE id_clase = %s"
+            cursor.execute(query, (dictada, id_clase))
+            connection.commit()
+            print("Estado de clase actualizado exitosamente.")
+        except Exception as e:
+            print("Error al cambiar el estado de clase:", e)
             connection.rollback()
         finally:
             close_connection(connection)

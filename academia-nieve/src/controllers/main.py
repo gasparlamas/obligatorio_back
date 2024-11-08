@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS  
 from instructores import  agregar_instructor,obtener_instructor, actualizar_instructor, eliminar_instructor, ver_clases_asignadas
 from alumnos import agregar_alumno,inscribir_alumno_en_clase, obtener_alumno, actualizar_alumno, eliminar_alumno
-from clases import crear_clase, cambiar_turno_clase,cambiar_tipo_clase, listar_clases, eliminar_clase
+from clases import crear_clase, cambiar_turno_clase,cambiar_tipo_clase, cambiar_estado_clase, listar_clases, eliminar_clase
 from alumno_clase import registrar_equipamiento_alumno, ver_equipamiento_alumno
 from turnos import agregar_turno, actualizar_turno, obtener_turno, eliminar_turno
 from actividades import obtener_actividad, actualizar_actividad
@@ -132,6 +132,18 @@ def api_cambiar_tipo_clase(id_clase):
     # Responder con un mensaje de éxito
     return jsonify({"message": "Tipo de clase actualizado exitosamente"}), 200
 
+
+@app.route("/api/clases/<int:id_clase>/estado", methods=["PUT"])
+def api_cambiar_estado_clase(id_clase):
+    # Obtener el estado de clase (dictada o no) desde el cuerpo de la solicitud json
+    data = request.json
+    dictada = data.get("dictada")
+
+    # Llamar a la función que cambia el estado de clase
+    resultado = cambiar_estado_clase(id_clase, dictada)
+    
+    # Responder con un mensaje de éxito
+    return jsonify({"message": "Tipo de clase actualizado exitosamente"}), 200
 
 @app.route("/api/clases", methods=["GET"])
 def api_listar_clases():
