@@ -157,6 +157,9 @@ def eliminar_clase(id_clase):
 if __name__ == "__main__":
     # Crear una nueva clase
     crear_clase(11, "91234567", 3, 3, False, True)
+
+    #Obtener las clases
+    clases = listar_clases()
     
     # Cambiar el turno de una clase
     cambiar_turno_clase(3, 1)

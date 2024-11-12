@@ -75,8 +75,7 @@ if __name__ == "__main__":
     
     
     # Prueba de obtener un turno
-    turno = obtener_turno("4")
-    print("Datos del turno:", turno)
+    turno = obtener_turnos()
     
     # Prueba de actualizar un turno
     actualizar_turno("4", "19:00:00", "22:00:00")

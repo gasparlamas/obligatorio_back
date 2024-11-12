@@ -12,7 +12,7 @@ app = Flask(__name__)
 CORS(app)  #habilita CORS para todas las rutas y permite solicitudes de cualquier origen
 # para SOLO dar acceso al frontend se puede especificar: CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
-# ------------------------- Instructores -------------------------
+# ------------------------- ENDPOINTS Instructores -------------------------
 
 @app.route("/api/instructores", methods=["POST"])
 def api_agregar_instructor():
@@ -50,7 +50,7 @@ def api_ver_clases_asignadas(ci_instructor):
     else:
         return jsonify({"message": "No se encontraron clases asignadas para este instructor"}), 404
 
-# ------------------------- Alumnos -------------------------
+# ------------------------- ENDPOINTS Alumnos -------------------------
 
 @app.route("/api/alumnos", methods=["POST"])
 def api_agregar_alumno():
@@ -91,7 +91,7 @@ def api_eliminar_alumno(ci_alumno):
     eliminar_alumno(ci_alumno)
     return jsonify({"message": "Alumno eliminado exitosamente"})
 
-# ------------------------- Clases -------------------------
+# ------------------------- ENDPOINTS Clases -------------------------
 @app.route("/api/clases", methods=["POST"])
 def api_crear_clase():
     data = request.json
@@ -162,7 +162,7 @@ def api_eliminar_clase(id_clase):
     return jsonify({"message": resultado["message"]}), 200  
 
 
-# ------------------------- Turnos -------------------------
+# ------------------------- ENDPOINTS Turnos -------------------------
 
 @app.route("/api/turnos", methods=["POST"])
 def api_agregar_turno():
@@ -198,7 +198,7 @@ def api_eliminar_turno(id_turno):
     eliminar_turno(id_turno)
     return jsonify({"message": "Turno eliminado exitosamente"})
 
-# ------------------------- Actividades -------------------------
+# ------------------------- ENDPOINTS Actividades -------------------------
 @app.route("/api/actividades", methods=["GET"])
 def api_obtener_actividades():
     actividades = obtener_actividades()
@@ -222,7 +222,7 @@ def api_actualizar_actividad(id_actividad):
 
 
 
-# ------------------------- Equipamiento -------------------------
+# ------------------------- ENDPOINTS Equipamiento -------------------------
 
 @app.route("/api/equipamiento", methods=["GET"])
 def api_obtener_equipamiento():
@@ -231,7 +231,7 @@ def api_obtener_equipamiento():
 
 
 
-# ------------------------- Alumno Clase -------------------------
+# ------------------------- ENDPOINTS Alumno Clase -------------------------
 @app.route("/api/alumno_clase/registrar", methods=["POST"])
 def api_registrar_equipamiento_alumno():
     data = request.json

@@ -106,12 +106,12 @@ def ver_clases_asignadas(ci_instructor):
 
 if __name__ == "__main__":
 
-     # Prueba de agregar un alumno
-    agregar_instructor("55287960", "Renzo", "Dorta")
+     # Prueba de agregar un instructor
+    agregar_instructor("55287965", "Nicolas", "Diaz")
 
     # Prueba de obtener un instructor
-    instructor = obtener_instructor("12345678")
-    print("Datos del instructor:", instructor)
+    instructor = obtener_instructores()
+    
     
     # Prueba de actualizar un instructor
     actualizar_instructor("91234567", "Fernando", "Gago")

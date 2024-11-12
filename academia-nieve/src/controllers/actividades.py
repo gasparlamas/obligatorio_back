@@ -31,9 +31,8 @@ def actualizar_actividad(id_actividad, descripcion, costo):
             close_connection(connection)
 
 if __name__ == "__main__":
-    # Prueba de obtener una actividad
-    actividad = obtener_actividad(1)  # Cambia el ID según lo necesites
-    print("Datos de la actividad:", actividad)
+    # Prueba de obtener actividades
+    obtener_actividades()  
     
     # Prueba de actualizar una actividad
-    actualizar_actividad(1, "Descripción actualizada", 1500)  # Cambia el ID y los datos según lo necesites
+    actualizar_actividad(1, "Descripción actualizada", 1500)  # Cambia el ID y los datos según sea necesario

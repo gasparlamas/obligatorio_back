@@ -117,9 +117,9 @@ if __name__ == "__main__":
     # Prueba de inscribir un alumno en una clase (verificación de turno incluida)
     inscribir_alumno_en_clase("10023456", 2)
     
-    # Prueba de obtener un alumno
-    alumno = obtener_alumno("10023456")
-    print("Datos del alumno:", alumno)
+    # Prueba de obtener alumnos
+    alumno = obtener_alumnos()
+ 
     
     # Prueba de actualizar un alumno
     actualizar_alumno("12345678", "Sancho", "Panza", "1992-05-12")
