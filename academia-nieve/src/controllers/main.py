@@ -1,5 +1,6 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS  
+from flask import Flask, request, jsonify,session
+from flask_cors import CORS 
+from database.connection import get_db_connection, close_connection
 from instructores import  agregar_instructor,obtener_instructores, actualizar_instructor, eliminar_instructor, ver_clases_asignadas
 from alumnos import agregar_alumno,inscribir_alumno_en_clase, obtener_alumnos, actualizar_alumno, eliminar_alumno
 from clases import crear_clase, cambiar_turno_clase,cambiar_tipo_clase, cambiar_estado_clase, listar_clases, eliminar_clase
@@ -8,8 +9,10 @@ from turnos import agregar_turno, actualizar_turno, obtener_turnos, eliminar_tur
 from actividades import obtener_actividades, actualizar_actividad
 from equipamiento import obtener_equipamiento
 from consultas import obtener_actividades_con_mas_ingresos, obtener_actividades_con_mas_alumnos, obtener_turnos_con_mas_clases_dictadas
+from login import validar_login
 
 app = Flask(__name__)
+app.secret_key = 't3E@1R9%q2!aWz8~4^X9J3!kLp0oZ5YfR'  #clave para el login
 CORS(app)  #habilita CORS para todas las rutas y permite solicitudes de cualquier origen
 # para SOLO dar acceso al frontend se puede especificar: CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
@@ -295,7 +298,34 @@ def api_obtener_turnos_mas_clases_dictadas():
         return jsonify(turnos)
     else:
         return jsonify({"mensaje": "No se encontraron turnos con clases dictadas."}), 404
-    
+
+
+# ------------------------- ENDPOINTS login -------------------------
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.json
+    correo = data.get("correo")
+    contraseña = data.get("contraseña")
+
+    if not correo or not contraseña:
+        return jsonify({"error": "Por favor, proporciona un Correo y una contraseña"}), 400
+
+    # Llamar a la lógica de validación de login
+    resultado = validar_login(correo, contraseña)
+
+    if resultado["success"]:
+        session["user"] = resultado["user"]
+        return jsonify({"message": resultado["message"]}), 200
+    else:
+        return jsonify({"error": resultado["message"]}), 401
+
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    if "user" not in session:
+        return jsonify({"message": "No hay una sesión activa"}), 400  # Cambié el código de estado a 400 (Bad Request)
+    session.pop("user", None)  # Si existe la clave "user", la elimina
+    return jsonify({"message": "Sesión cerrada exitosamente"}), 200
 
 
 
