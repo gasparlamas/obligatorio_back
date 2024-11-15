@@ -9,7 +9,7 @@ from turnos import agregar_turno, actualizar_turno, obtener_turnos, eliminar_tur
 from actividades import obtener_actividades, actualizar_actividad
 from equipamiento import obtener_equipamiento
 from consultas import obtener_actividades_con_mas_ingresos, obtener_actividades_con_mas_alumnos, obtener_turnos_con_mas_clases_dictadas
-from login import validar_login
+from login import validar_login, registrar_usuario
 
 app = Flask(__name__)
 app.secret_key = 't3E@1R9%q2!aWz8~4^X9J3!kLp0oZ5YfR'  #clave para el login
@@ -327,7 +327,21 @@ def logout():
     session.pop("user", None)  # Si existe la clave "user", la elimina
     return jsonify({"message": "Sesión cerrada exitosamente"}), 200
 
+@app.route("/api/login/registrar", methods=["POST"])
+def api_registrar_usuario():
+    data = request.json
+    correo = data.get("correo")
+    contraseña = data.get("contraseña")
 
-
+    if not correo or not contraseña:
+        return jsonify({"error": "Por favor, proporciona un Correo y una contraseña"}), 400
+    
+    resultado = registrar_usuario(correo, contraseña)
+    if resultado["success"]:
+        return jsonify(resultado), 201  # Registro exitoso
+    else:
+        return jsonify(resultado), 500  # Error en el servidor o bd
+    
+    
 if __name__ == "__main__":
     app.run(debug=True)
