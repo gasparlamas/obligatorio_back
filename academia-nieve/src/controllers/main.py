@@ -7,6 +7,7 @@ from alumno_clase import registrar_equipamiento_alumno, ver_equipamiento_alumno
 from turnos import agregar_turno, actualizar_turno, obtener_turnos, eliminar_turno
 from actividades import obtener_actividades, actualizar_actividad
 from equipamiento import obtener_equipamiento
+from consultas import obtener_actividades_con_mas_ingresos, obtener_actividades_con_mas_alumnos, obtener_turnos_con_mas_clases_dictadas
 
 app = Flask(__name__)
 CORS(app)  #habilita CORS para todas las rutas y permite solicitudes de cualquier origen
@@ -268,6 +269,34 @@ def api_ver_equipamiento_alumno():
         return jsonify(equipamiento), 200
     else:
         return jsonify({"message": "No se encontró registro de equipamiento para el alumno en esta clase."}), 404
+    
+
+# ------------------------- ENDPOINTS consultas -------------------------
+@app.route("/api/consultas/ingresos", methods=["GET"])
+def api_obtener_actividades_mas_ingresos():
+    actividades = obtener_actividades_con_mas_ingresos()
+    if actividades:
+        return jsonify(actividades)
+    else:
+        return jsonify({"mensaje": "No se encontraron actividades"}), 404
+
+@app.route("/api/consultas/alumnos", methods=["GET"])
+def api_obtener_actividades_mas_alumnos():
+    actividades = obtener_actividades_con_mas_alumnos()
+    if actividades:
+        return jsonify(actividades)
+    else:
+        return jsonify({"mensaje": "No se encontraron actividades con alumnos inscritos."}), 404
+
+@app.route("/api/consultas/turnos", methods=["GET"])
+def api_obtener_turnos_mas_clases_dictadas():
+    turnos = obtener_turnos_con_mas_clases_dictadas()
+    if turnos:
+        return jsonify(turnos)
+    else:
+        return jsonify({"mensaje": "No se encontraron turnos con clases dictadas."}), 404
+    
+
 
 
 if __name__ == "__main__":

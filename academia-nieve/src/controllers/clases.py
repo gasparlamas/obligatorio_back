@@ -156,19 +156,19 @@ def eliminar_clase(id_clase):
 # Ejemplos de uso
 if __name__ == "__main__":
     # Crear una nueva clase
-    crear_clase(11, "91234567", 3, 3, False, True)
+    crear_clase(2, "27422289", 4, 2, True, True)
 
     #Obtener las clases
-    clases = listar_clases()
+    #clases = listar_clases()
     
     # Cambiar el turno de una clase
-    cambiar_turno_clase(3, 1)
+    #cambiar_turno_clase(3, 1)
     
     # Cambiar el tipo de clase a individual
-    cambiar_tipo_clase(3, False)
+    #cambiar_tipo_clase(3, False)
     
     # Listar todas las clases
-    listar_clases()
+    #listar_clases()
     
     # Eliminar una clase
-    eliminar_clase(8)
+    #eliminar_clase(8)

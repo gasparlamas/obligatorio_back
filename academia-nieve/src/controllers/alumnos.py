@@ -112,17 +112,17 @@ def eliminar_alumno(ci_alumno):
 
 if __name__ == "__main__":
     # Prueba de agregar un alumno
-    agregar_alumno("18919120", "Cris", "Pierri", "2005-04-20")
+    #agregar_alumno("18919120", "Cris", "Pierri", "2005-04-20")
     
     # Prueba de inscribir un alumno en una clase (verificación de turno incluida)
-    inscribir_alumno_en_clase("10023456", 2)
+    inscribir_alumno_en_clase("10089012", 1)
     
     # Prueba de obtener alumnos
-    alumno = obtener_alumnos()
+    #alumno = obtener_alumnos()
  
     
     # Prueba de actualizar un alumno
-    actualizar_alumno("12345678", "Sancho", "Panza", "1992-05-12")
+    #actualizar_alumno("12345678", "Sancho", "Panza", "1992-05-12")
     
     # Prueba de eliminar un alumno
-    eliminar_alumno("10156789")
+    #eliminar_alumno("10112345")

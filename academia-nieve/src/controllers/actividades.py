@@ -35,4 +35,4 @@ if __name__ == "__main__":
     obtener_actividades()  
     
     # Prueba de actualizar una actividad
-    actualizar_actividad(1, "Descripción actualizada", 1500)  # Cambia el ID y los datos según sea necesario
+    actualizar_actividad(1, "Ski", 1500)  # Cambia el ID y los datos según sea necesario
