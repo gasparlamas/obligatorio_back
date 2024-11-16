@@ -19,7 +19,7 @@ def registrar_equipamiento_alumno(id_clase, ci_alumno, alquilado, id_equipamient
             if not clase:
                 return {"error": "La clase no existe.", "status": 404}
 
-            # Verificar si el equipamiento existe (si se proporciona)
+            # Verificar si el equipamiento existe (si se alquila)
             if id_equipamiento:
                 cursor.execute("SELECT * FROM equipamiento WHERE id_equipamiento = %s", (id_equipamiento,))
                 equipamiento = cursor.fetchone()
@@ -36,7 +36,6 @@ def registrar_equipamiento_alumno(id_clase, ci_alumno, alquilado, id_equipamient
             if conflicto_clase:
                 return {"error": "El alumno ya está inscrito en otra clase en el mismo turno.", "status": 400}
 
-            # Insertar registro en la tabla alumno_clase
             query = """
                 INSERT INTO alumno_clase (id_clase, ci_alumno, alquilado, id_equipamiento)
                 VALUES (%s, %s, %s, %s)
@@ -49,7 +48,7 @@ def registrar_equipamiento_alumno(id_clase, ci_alumno, alquilado, id_equipamient
         except Exception as e:
             print("Error al registrar el equipamiento del alumno:", str(e)) 
             connection.rollback()
-            return {"error": f"Error al registrar el equipamiento del alumno: {str(e)}", "status": 500}  # Enviar el detalle
+            return {"error": f"Error al registrar el equipamiento del alumno: {str(e)}", "status": 500}  
         finally:
             close_connection(connection)
 
@@ -79,13 +78,3 @@ def ver_equipamiento_alumno(id_clase, ci_alumno):
         finally:
             close_connection(connection)
 
-if __name__ == "__main__":
-    # Prueba de registrar equipamiento de la escuela para un alumno
-    registrar_equipamiento_alumno(id_clase=1, ci_alumno="10134567", alquilado=True, id_equipamiento=3)
-    
-    # Prueba de registrar equipamiento propio (sin id_equipamiento)
-    #registrar_equipamiento_alumno(id_clase=1, ci_alumno="10034567", alquilado=False)
-    
-    # Prueba de ver el equipamiento de un alumno
-    equipamiento = ver_equipamiento_alumno(id_clase=1, ci_alumno="10134567")
-    print("Datos de equipamiento del alumno:", equipamiento)

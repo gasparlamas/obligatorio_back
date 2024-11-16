@@ -68,17 +68,3 @@ def obtener_turnos():
             close_connection(connection)
 
 
-
-if __name__ == "__main__":
-    # Prueba de agregar un turno
-    agregar_turno("4", "18:30:00", "21:00:00")
-    
-    
-    # Prueba de obtener un turno
-    turno = obtener_turnos()
-    
-    # Prueba de actualizar un turno
-    actualizar_turno("4", "19:00:00", "22:00:00")
-    
-    # Prueba de eliminar un alumno
-    eliminar_turno("4")

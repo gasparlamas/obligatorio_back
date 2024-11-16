@@ -104,21 +104,3 @@ def ver_clases_asignadas(ci_instructor):
         finally:
             close_connection(connection)
 
-if __name__ == "__main__":
-
-     # Prueba de agregar un instructor
-    agregar_instructor("55287965", "Nicolas", "Diaz")
-
-    # Prueba de obtener un instructor
-    instructor = obtener_instructores()
-    
-    
-    # Prueba de actualizar un instructor
-    actualizar_instructor("91234567", "Fernando", "Gago")
-    
-    # Prueba de eliminar un instructor
-    eliminar_instructor("78901234")
-    
-    # Prueba de ver clases asignadas
-    clases_asignadas = ver_clases_asignadas("12345678")
-    print("Clases asignadas al instructor:", clases_asignadas)

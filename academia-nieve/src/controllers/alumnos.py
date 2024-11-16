@@ -22,11 +22,9 @@ def inscribir_alumno_en_clase(ci_alumno, id_clase):
         try:
             cursor = connection.cursor(dictionary=True)
             
-            #Obtener el turno de la clase a la que se quiere inscribir el alumno
             cursor.execute("SELECT id_turno FROM clase WHERE id_clase = %s", (id_clase,))
             turno_clase = cursor.fetchone()
             
-            # Verificar si la clase existe
             if not turno_clase:
                 print("Clase no encontrada.")
                 return
@@ -45,7 +43,6 @@ def inscribir_alumno_en_clase(ci_alumno, id_clase):
             if resultado['cuenta'] > 0:
                 print("El alumno ya está inscrito en otra clase en el mismo turno.")
             else:
-                #Insertar al alumno en la clase si no está en otro turno
                 cursor.execute("""
                     INSERT INTO alumno_clase (id_clase, ci_alumno, id_equipamiento, alquilado)
                     VALUES (%s, %s, NULL, FALSE)
@@ -89,6 +86,8 @@ def actualizar_alumno(ci_alumno, nombre, apellido, fecha_nacimiento):
         finally:
             close_connection(connection)
 
+# funcion para eliminar un alumno
+
 def eliminar_alumno(ci_alumno):
     connection = get_db_connection()
     if connection:
@@ -110,19 +109,3 @@ def eliminar_alumno(ci_alumno):
             close_connection(connection)
 
 
-if __name__ == "__main__":
-    # Prueba de agregar un alumno
-    #agregar_alumno("18919120", "Cris", "Pierri", "2005-04-20")
-    
-    # Prueba de inscribir un alumno en una clase (verificación de turno incluida)
-    inscribir_alumno_en_clase("10089012", 1)
-    
-    # Prueba de obtener alumnos
-    #alumno = obtener_alumnos()
- 
-    
-    # Prueba de actualizar un alumno
-    #actualizar_alumno("12345678", "Sancho", "Panza", "1992-05-12")
-    
-    # Prueba de eliminar un alumno
-    #eliminar_alumno("10112345")

@@ -18,7 +18,4 @@ def obtener_equipamiento():
 
 
 
-# Ejemplos de uso
-if __name__ == "__main__":
-    # Obtener el equipamiento
-    obtener_equipamiento()
+

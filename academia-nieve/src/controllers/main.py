@@ -3,7 +3,7 @@ from flask_cors import CORS
 from database.connection import get_db_connection, close_connection
 from instructores import  agregar_instructor,obtener_instructores, actualizar_instructor, eliminar_instructor, ver_clases_asignadas
 from alumnos import agregar_alumno,inscribir_alumno_en_clase, obtener_alumnos, actualizar_alumno, eliminar_alumno
-from clases import crear_clase, cambiar_turno_clase,cambiar_tipo_clase, cambiar_estado_clase, listar_clases, eliminar_clase
+from clases import crear_clase, cambiar_turno_clase,cambiar_tipo_clase, cambiar_estado_clase, listar_clases
 from alumno_clase import registrar_equipamiento_alumno, ver_equipamiento_alumno
 from turnos import agregar_turno, actualizar_turno, obtener_turnos, eliminar_turno
 from actividades import obtener_actividades, actualizar_actividad
@@ -157,13 +157,6 @@ def api_listar_clases():
 
     # Retornar las clases como respuesta en formato json
     return jsonify(clases), 200
-
-@app.route("/api/clases/<id_clase>", methods=["DELETE"])
-def api_eliminar_clase(id_clase):
-    resultado = eliminar_clase(id_clase)
-    if not resultado["success"]:
-        return jsonify({"message": resultado["message"]}), 400  
-    return jsonify({"message": resultado["message"]}), 200  
 
 
 # ------------------------- ENDPOINTS Turnos -------------------------

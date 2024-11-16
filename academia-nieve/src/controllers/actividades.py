@@ -30,9 +30,3 @@ def actualizar_actividad(id_actividad, descripcion, costo):
         finally:
             close_connection(connection)
 
-if __name__ == "__main__":
-    # Prueba de obtener actividades
-    obtener_actividades()  
-    
-    # Prueba de actualizar una actividad
-    actualizar_actividad(1, "Ski", 1500)  # Cambia el ID y los datos según sea necesario

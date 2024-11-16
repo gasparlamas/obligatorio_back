@@ -18,8 +18,7 @@ def crear_clase(id_clase, ci_instructor, id_actividad, id_turno, dictada, grupal
             if resultado[0] > 0:
                 print("El instructor ya está asignado a otra clase en el mismo turno.")
                 return
-
-            # Insertar la nueva clase
+            
             query = """
                 INSERT INTO clase (id_clase, ci_instructor, id_actividad, id_turno, dictada, grupal)
                 VALUES (%s, %s, %s, %s, %s, %s)
@@ -119,56 +118,7 @@ def listar_clases():
         finally:
             close_connection(connection)
 
-# Función para eliminar una clase (si no fue dictada)
-def eliminar_clase(id_clase):
-    connection = get_db_connection()
-    if connection:
-        try:
-            cursor = connection.cursor()
 
-            # Verificar si la clase ya fue dictada
-            cursor.execute("SELECT dictada FROM clase WHERE id_clase = %s", (id_clase,))
-            clase = cursor.fetchone()
 
-            if clase and clase[0]:  # Si dictada es True
-                print("No se puede eliminar una clase ya dictada.")
-                return {"success": False, "message": "No se puede eliminar una clase ya dictada."}
 
-            # Eliminar las referencias a la clase en "alumno_clase"
-            delete_referencias_query = "DELETE FROM alumno_clase WHERE id_clase = %s"
-            cursor.execute(delete_referencias_query, (id_clase,))
-            print("Referencias a la clase eliminadas de alumno_clase.")
-
-            # Eliminar la clase
-            query = "DELETE FROM clase WHERE id_clase = %s"
-            cursor.execute(query, (id_clase,))
-            connection.commit()
-            print("Clase eliminada exitosamente.")
-            return {"success": True, "message": "Clase eliminada exitosamente."}
-
-        except Exception as e:
-            print("Error al eliminar la clase:", e)
-            connection.rollback()
-            return {"success": False, "message": f"Error al eliminar la clase: {str(e)}"}
-        finally:
-            close_connection(connection)
-
-# Ejemplos de uso
-if __name__ == "__main__":
-    # Crear una nueva clase
-    crear_clase(2, "27422289", 4, 2, True, True)
-
-    #Obtener las clases
-    #clases = listar_clases()
-    
-    # Cambiar el turno de una clase
-    #cambiar_turno_clase(3, 1)
-    
-    # Cambiar el tipo de clase a individual
-    #cambiar_tipo_clase(3, False)
-    
-    # Listar todas las clases
-    #listar_clases()
-    
-    # Eliminar una clase
-    #eliminar_clase(8)
+ 
