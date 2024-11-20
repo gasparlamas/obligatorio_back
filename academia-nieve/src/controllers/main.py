@@ -3,7 +3,7 @@ from flask_cors import CORS
 from database.connection import get_db_connection, close_connection
 from instructores import  agregar_instructor,obtener_instructores, actualizar_instructor, eliminar_instructor, ver_clases_asignadas
 from alumnos import agregar_alumno,inscribir_alumno_en_clase, obtener_alumnos, actualizar_alumno, eliminar_alumno
-from clases import crear_clase, cambiar_turno_clase,cambiar_tipo_clase, cambiar_estado_clase, listar_clases
+from clases import crear_clase, cambiar_turno_clase,cambiar_tipo_clase, cambiar_estado_clase, listar_clases, cambiar_instructor_clase, cambiar_actividad_clase
 from alumno_clase import registrar_equipamiento_alumno, ver_equipamiento_alumno
 from turnos import agregar_turno, actualizar_turno, obtener_turnos, eliminar_turno
 from actividades import obtener_actividades, actualizar_actividad
@@ -107,6 +107,40 @@ def api_crear_clase():
     grupal = data.get("grupal")
     crear_clase(id_clase, ci_instructor, id_actividad, id_turno, dictada, grupal)
     return jsonify({"message": "Clase creada exitosamente"}), 201
+
+@app.route("/api/clases/<int:id_clase>/instructor", methods=["PUT"])
+def api_cambiar_instructor_clase(id_clase):
+    # Obtener el instructor desde el cuerpo de la solicitud json
+    data = request.json
+    ci_instructor = data.get("ci_instructor")
+
+    # Llamar a la función que cambia el instructor de la clase
+    resultado = cambiar_instructor_clase(id_clase, ci_instructor)
+
+    # Si la clase ya está asignada, retornar un error
+    if resultado == "clase_asignada":
+        return jsonify({"error": "No se puede cambiar el instructor de una clase ya asignada"}), 400
+
+    # Responder con un mensaje de éxito
+    return jsonify({"message": "Instructor de la clase actualizado exitosamente"}), 200
+
+
+@app.route("/api/clases/<int:id_clase>/actividad", methods=["PUT"])
+def api_cambiar_actividad_clase(id_clase):
+    # Obtener la actividad desde el cuerpo de la solicitud json
+    data = request.json
+    id_actividad = data.get("id_actividad")
+
+    # Llamar a la función que cambia la actividad de la clase
+    resultado = cambiar_actividad_clase(id_clase, id_actividad)
+
+    # Si la clase ya está asignada, retornar un error
+    if resultado == "clase_asignada":
+        return jsonify({"error": "No se puede cambiar la actividad de una clase ya asignada"}), 400
+
+    # Responder con un mensaje de éxito
+    return jsonify({"message": "Actividad de la clase actualizada exitosamente"}), 200
+
 
 @app.route("/api/clases/<int:id_clase>/turno/<int:id_turno>", methods=["PUT"])
 def api_cambiar_turno_clase(id_clase, id_turno):
