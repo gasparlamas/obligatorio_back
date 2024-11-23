@@ -1,7 +1,14 @@
 from database.connection import get_db_connection, close_connection
+from flask import jsonify
 
 # Función para agregar un nuevo alumno
 def agregar_alumno(ci_alumno, nombre, apellido, fecha_nacimiento):
+
+    # Validar que ci_alumno sea numérico
+    if not ci_alumno.isdigit():
+        response = jsonify({"error": "El CI debe contener solo números."})
+        response.status_code = 400
+        return response
     connection = get_db_connection()
     if connection:
         try:

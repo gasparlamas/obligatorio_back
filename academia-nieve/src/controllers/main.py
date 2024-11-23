@@ -24,8 +24,25 @@ def api_agregar_instructor():
     ci_instructor = data.get("ci_instructor")
     nombre = data.get("nombre")
     apellido = data.get("apellido")
-    agregar_instructor(ci_instructor, nombre, apellido)
-    return jsonify({"message": "Instructor agregado exitosamente"}), 201
+
+    # Validar que el CI sea numérico
+    if not ci_instructor or not ci_instructor.isdigit():
+        return jsonify({"error": "El CI debe contener solo números."}), 400
+    
+    # Validar que el nombre no supere los 20 caracteres
+    if not nombre or len(nombre) > 20:
+        return jsonify({"error": "El nombre no debe superar los 20 caracteres."}), 400
+    
+    # Validar que el apellido no supere los 20 caracteres
+    if not apellido or len(apellido) > 20:
+        return jsonify({"error": "El apellido no debe superar los 20 caracteres."}), 400
+
+    try:
+        agregar_instructor(ci_instructor, nombre, apellido)
+        return jsonify({"message": "Instructor agregado exitosamente"}), 201
+    except Exception as e:
+        print("Error al agregar el instructor:", e)
+        return jsonify({"error": "Error al agregar el Instructor."}), 500
 
 
 @app.route("/api/instructores", methods=["GET"])
@@ -63,8 +80,25 @@ def api_agregar_alumno():
     nombre = data.get("nombre")
     apellido = data.get("apellido")
     fecha_nacimiento = data.get("fecha_nacimiento")
-    agregar_alumno(ci_alumno, nombre, apellido, fecha_nacimiento)
-    return jsonify({"message": "Alumno agregado exitosamente"}), 201
+
+    # Validar que el CI sea numérico
+    if not ci_alumno or not ci_alumno.isdigit():
+        return jsonify({"error": "El CI debe contener solo números."}), 400
+    
+     # Validar que el nombre no supere los 20 caracteres
+    if not nombre or len(nombre) > 20:
+        return jsonify({"error": "El nombre no debe superar los 20 caracteres."}), 400
+    
+    # Validar que el apellido no supere los 20 caracteres
+    if not apellido or len(apellido) > 20:
+        return jsonify({"error": "El apellido no debe superar los 20 caracteres."}), 400
+
+    try:
+        agregar_alumno(ci_alumno, nombre, apellido, fecha_nacimiento)
+        return jsonify({"message": "Alumno agregado exitosamente"}), 201
+    except Exception as e:
+        print("Error al agregar el alumno:", e)
+        return jsonify({"error": "Error al agregar el alumno."}), 500
 
 @app.route("/api/alumnos/<ci_alumno>/inscripcion", methods=["POST"])
 def api_inscribir_alumno_en_clase(ci_alumno):
@@ -105,24 +139,43 @@ def api_crear_clase():
     id_turno = data.get("id_turno")
     dictada = data.get("dictada")
     grupal = data.get("grupal")
-    crear_clase(id_clase, ci_instructor, id_actividad, id_turno, dictada, grupal)
-    return jsonify({"message": "Clase creada exitosamente"}), 201
+
+    # Llamar a la función crear_clase y manejar la respuesta
+    resultado = crear_clase(id_clase, ci_instructor, id_actividad, id_turno, dictada, grupal)
+
+    if resultado["success"]:
+        return jsonify({"message": resultado["message"]}), 201
+    else:
+        return jsonify({"message": resultado["message"]}), 400
+    if resultado["success"]:
+        return jsonify({"message": resultado["message"]}), 201
+    else:
+        return jsonify({"message": resultado["message"]}), 400
 
 @app.route("/api/clases/<int:id_clase>/instructor", methods=["PUT"])
 def api_cambiar_instructor_clase(id_clase):
-    # Obtener el instructor desde el cuerpo de la solicitud json
+    # Obtener el instructor desde el cuerpo de la solicitud JSON
     data = request.json
     ci_instructor = data.get("ci_instructor")
+
+    if not ci_instructor:
+        return jsonify({"error": "El campo 'ci_instructor' es obligatorio"}), 400
 
     # Llamar a la función que cambia el instructor de la clase
     resultado = cambiar_instructor_clase(id_clase, ci_instructor)
 
-    # Si la clase ya está asignada, retornar un error
     if resultado == "clase_asignada":
-        return jsonify({"error": "No se puede cambiar el instructor de una clase ya asignada"}), 400
+        return jsonify({"error": "El instructor ya está asignado a esta clase"}), 400
+    elif resultado == "instructor_duplicado":
+        return jsonify({"error": "El instructor ya tiene otra clase en el turno seleccionado"}), 400
+    elif resultado == "clase_no_existente":
+        return jsonify({"error": "La clase no existe"}), 404
+    elif resultado == "error_servidor":
+        return jsonify({"error": "Error interno del servidor"}), 500
 
     # Responder con un mensaje de éxito
     return jsonify({"message": "Instructor de la clase actualizado exitosamente"}), 200
+
 
 
 @app.route("/api/clases/<int:id_clase>/actividad", methods=["PUT"])
@@ -147,12 +200,18 @@ def api_cambiar_turno_clase(id_clase, id_turno):
     # Llamar a la función que cambia el turno de la clase
     resultado = cambiar_turno_clase(id_clase, id_turno)
 
-    # Si la clase ya está dictada, retornar un error
     if resultado == "clase_dictada":
         return jsonify({"error": "No se puede cambiar el turno de una clase ya dictada"}), 400
+    elif resultado == "instructor_duplicado":
+        return jsonify({"error": "El instructor ya tiene otra clase en el turno seleccionado"}), 400
+    elif resultado == "clase_no_existente":
+        return jsonify({"error": "La clase no existe"}), 404
+    elif resultado == "error_servidor":
+        return jsonify({"error": "Error interno del servidor"}), 500
 
     # Responder con un mensaje de éxito
     return jsonify({"message": "Turno de la clase actualizado exitosamente"}), 200
+
 
 
 @app.route("/api/clases/<int:id_clase>/tipo", methods=["PUT"])
@@ -201,8 +260,35 @@ def api_agregar_turno():
     id_turno = data.get("id_turno")
     hora_inicio = data.get("hora_inicio")
     hora_fin = data.get("hora_fin")
-    agregar_turno(id_turno, hora_inicio, hora_fin)
-    return jsonify({"message": "Turno agregado exitosamente"}), 201
+
+     # Validar que el CI sea numérico
+    if not id_turno or not id_turno.isdigit():
+        return jsonify({"error": "El ID debe contener solo números."}), 400
+
+    # Validar si el id_turno ya está en uso
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor()
+            query = "SELECT COUNT(*) FROM turnos WHERE id_turno = %s"
+            cursor.execute(query, (id_turno,))
+            result = cursor.fetchone()
+
+            if result[0] > 0:  # Si ya existe
+                return jsonify({"error": "El ID del turno ya está en uso."}), 400
+        except Exception as e:
+            print("Error al verificar el ID del turno:", e)
+            return jsonify({"error": "Error en el servidor al verificar el ID del turno."}), 500
+        finally:
+            close_connection(connection)
+
+    # Si el ID no está en uso, agregar el turno
+    try:
+        agregar_turno(id_turno, hora_inicio, hora_fin)
+        return jsonify({"message": "Turno agregado exitosamente"}), 201
+    except Exception as e:
+        print("Error al agregar el turno:", e)
+        return jsonify({"error": "Error al agregar el turno."}), 500
 
 @app.route("/api/turnos/<id_turno>", methods=["PUT"])
 def api_actualizar_turno(id_turno):
@@ -241,6 +327,10 @@ def api_actualizar_actividad(id_actividad):
     data = request.json
     descripcion = data.get("descripcion")
     costo = data.get("costo")
+
+    # Validar que la descripción no supere los 50 caracteres
+    if not descripcion or len(descripcion) > 50:
+        return jsonify({"error": "La descripción no debe superar los 50 caracteres."}), 400
 
     if not descripcion or not costo:
         return jsonify({"message": "Descripcion y costo son requeridos"}), 400
